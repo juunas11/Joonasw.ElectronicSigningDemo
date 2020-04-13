@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.4.0" />
+    <PackageReference Include="IronPdf" Version="2020.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Joonasw.ElectronicSigningDemo.WorkflowModels\Joonasw.ElectronicSigningDemo.WorkflowModels.csproj" />
+  </ItemGroup>
+
+</Project>

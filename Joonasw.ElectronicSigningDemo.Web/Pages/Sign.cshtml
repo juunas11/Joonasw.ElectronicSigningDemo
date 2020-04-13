@@ -1,0 +1,50 @@
+﻿@page "{id}"
+@model Joonasw.ElectronicSigningDemo.Web.Pages.SignModel
+@{
+    ViewData["Title"] = "Sign";
+}
+
+<h1>Sign</h1>
+
+<a asp-controller="Document" asp-action="DownloadUnsigned" asp-route-requestid="@Model.RequestId" class="btn btn-primary">Download document</a>
+
+<form>
+    <div class="form-group row">
+        <label asp-for="RequestSubject" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="RequestSubject" readonly class="form-control-plaintext">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="RequestMessage" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <p class="mb-0" style="padding-top: 6px; padding-bottom: 6px; white-space: pre-wrap">@Model.RequestMessage</p>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="DocumentName" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="DocumentName" readonly class="form-control-plaintext">
+        </div>
+    </div>
+</form>
+
+@if (Model.WorkflowReadyForEvent)
+{
+    <form method="post" asp-page-handler="approve">
+        <input type="hidden" asp-for="RequestId" />
+        <input type="hidden" asp-for="SignerEmail" />
+        <button class="btn btn-primary mb-2" type="submit">Sign</button>
+    </form>
+
+    <form method="post" asp-page-handler="decline">
+        <input type="hidden" asp-for="RequestId" />
+        <input type="hidden" asp-for="SignerEmail" />
+        <button class="btn btn-danger" type="submit">Decline</button>
+    </form>
+}
+else
+{
+    <p>The workflow is not yet ready for signing. Please wait a moment and refresh the page.</p>
+    <a asp-page="Sign" asp-route-id="@Model.RequestId" asp-route-email="@Model.SignerEmail" class="btn btn-primary">Refresh</a>
+}

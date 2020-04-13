@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Joonasw.ElectronicSigningDemo.Workflows", "Joonasw.ElectronicSigningDemo.Workflows\Joonasw.ElectronicSigningDemo.Workflows.csproj", "{F77459A4-4868-4884-A9DE-636AADC8456B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Joonasw.ElectronicSigningDemo.WorkflowModels", "Joonasw.ElectronicSigningDemo.WorkflowModels\Joonasw.ElectronicSigningDemo.WorkflowModels.csproj", "{18DE643F-19C9-46BE-9E75-7CA4A4603BAE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Joonasw.ElectronicSigningDemo.Data", "Joonasw.ElectronicSigningDemo.Data\Joonasw.ElectronicSigningDemo.Data.csproj", "{8913D972-FCD3-4C9D-91BE-D73FAE3D8DC5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Joonasw.ElectronicSigningDemo.Web", "Joonasw.ElectronicSigningDemo.Web\Joonasw.ElectronicSigningDemo.Web.csproj", "{C52E372A-06E6-451B-80F8-CCB7768B5FBC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Joonasw.ElectronicSigningDemo.Documents", "Joonasw.ElectronicSigningDemo.Documents\Joonasw.ElectronicSigningDemo.Documents.csproj", "{AD984E2D-6309-4F74-90E7-101D91331DA8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9DFC945C-303F-41AE-AEC0-BCE3EC37B017}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F77459A4-4868-4884-A9DE-636AADC8456B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F77459A4-4868-4884-A9DE-636AADC8456B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F77459A4-4868-4884-A9DE-636AADC8456B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F77459A4-4868-4884-A9DE-636AADC8456B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18DE643F-19C9-46BE-9E75-7CA4A4603BAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18DE643F-19C9-46BE-9E75-7CA4A4603BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18DE643F-19C9-46BE-9E75-7CA4A4603BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18DE643F-19C9-46BE-9E75-7CA4A4603BAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8913D972-FCD3-4C9D-91BE-D73FAE3D8DC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8913D972-FCD3-4C9D-91BE-D73FAE3D8DC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8913D972-FCD3-4C9D-91BE-D73FAE3D8DC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8913D972-FCD3-4C9D-91BE-D73FAE3D8DC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C52E372A-06E6-451B-80F8-CCB7768B5FBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C52E372A-06E6-451B-80F8-CCB7768B5FBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C52E372A-06E6-451B-80F8-CCB7768B5FBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C52E372A-06E6-451B-80F8-CCB7768B5FBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD984E2D-6309-4F74-90E7-101D91331DA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD984E2D-6309-4F74-90E7-101D91331DA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD984E2D-6309-4F74-90E7-101D91331DA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD984E2D-6309-4F74-90E7-101D91331DA8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {65576892-B660-4690-9F71-4C23B7994EEC}
+	EndGlobalSection
+EndGlobal

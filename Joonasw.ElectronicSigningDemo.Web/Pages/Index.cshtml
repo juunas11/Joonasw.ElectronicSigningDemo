@@ -1,0 +1,38 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Send document for signing";
+}
+
+<h1>Send document for signing</h1>
+
+<div>
+    @Html.ValidationSummary()
+</div>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label asp-for="Model.Subject"></label>
+        <input asp-for="Model.Subject" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Model.Message"></label>
+        <textarea asp-for="Model.Message" class="form-control" rows="4"></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Model.SignerEmails"></label>
+        <input asp-for="Model.SignerEmails" class="form-control" autocomplete="off" />
+        <small class="form-text text-muted">
+            Separate multiple email addresses with commas.
+        </small>
+    </div>
+    <div class="form-group">
+        <label asp-for="Model.Document"></label>
+        <input type="file" asp-for="Model.Document" class="form-control-file" />
+        <small class="form-text text-muted">
+            Only PDF files are supported.
+        </small>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+

@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "ConnectionStrings__Sql": "Data Source=(LocalDb)\\MSSQLLocalDB;Initial Catalog=ElectronicSigningDb;Integrated Security=True",
+    "AppBaseUrl": "https://localhost:44328",
+    "Storage__ContainerName": "esigning",
+    "SendGridKey": "your-sendgrid-key",
+    "FromEmail": "your-sender-email"
+  }
+}

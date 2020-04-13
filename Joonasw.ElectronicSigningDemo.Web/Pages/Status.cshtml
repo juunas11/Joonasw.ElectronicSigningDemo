@@ -1,0 +1,86 @@
+﻿@page "{id}"
+@model Joonasw.ElectronicSigningDemo.Web.StatusModel
+@{
+    ViewData["Title"] = "Status";
+}
+
+<h1>Status</h1>
+
+<form>
+    <div class="form-group row">
+        <label asp-for="RequestSubject" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="RequestSubject" readonly class="form-control-plaintext">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="RequestMessage" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <p class="mb-0" style="padding-top: 6px; padding-bottom: 6px; white-space: pre-wrap">@Model.RequestMessage</p>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="DocumentName" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="DocumentName" readonly class="form-control-plaintext">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="WorkflowStartedAt" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="WorkflowStartedAt" readonly class="form-control-plaintext">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="WorkflowCompletedAt" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="WorkflowCompletedAt" readonly class="form-control-plaintext">
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Status" class="col-sm-3 col-form-label"></label>
+        <div class="col-sm-9">
+            <input asp-for="Status" readonly class="form-control-plaintext">
+        </div>
+    </div>
+</form>
+
+<h2>Signer status</h2>
+<form>
+    @foreach (var signer in Model.Signers)
+    {
+        string status = "";
+        if (signer.DecidedAt == null)
+        {
+            status = Model.WorkflowCompletedAt == null
+                ? "Not responded yet"
+                : "Did not sign within expected time";
+        }
+        else
+        {
+            status = signer.Signed
+                ? $"Signed at {signer.DecidedAt:dd.MM.yyyy HH:mm K}"
+                : $"Rejected at {signer.DecidedAt:dd.MM.yyyy HH:mm K}";
+        }
+        <div class="form-group row">
+            <label class="col-sm-3 col-form-label">@signer.Email</label>
+            <div class="col-sm-9">
+                <input readonly class="form-control-plaintext" value="@status">
+            </div>
+        </div>
+    }
+</form>
+
+@if (Model.Status == RequestStatus.Creating || Model.Status == RequestStatus.WaitingForSignatures)
+{
+    <a asp-page="Status" asp-route-id="@Model.RequestId" class="btn btn-primary">Refresh page</a>
+}
+else if (Model.Status == RequestStatus.Completed)
+{
+    <a asp-controller="Document" asp-action="DownloadSigned" asp-route-requestid="@Model.RequestId" class="btn btn-primary">Download signed document</a>
+}
+
+<h2 class="mt-1">Workflow status response</h2>
+<pre>
+@Model.WorkflowStatusResponse
+</pre>
