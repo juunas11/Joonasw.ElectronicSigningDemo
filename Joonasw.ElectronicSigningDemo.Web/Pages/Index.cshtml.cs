@@ -62,7 +62,7 @@ namespace Joonasw.ElectronicSigningDemo.Web.Pages
                 Id = id,
                 Subject = Model.Subject,
                 Message = Model.Message,
-                DocumentName = Model.Document.FileName,
+                DocumentName = $"{Guid.NewGuid()}.pdf",
                 Signers = signerEmails
                     .Select(email => new Signer
                     {
