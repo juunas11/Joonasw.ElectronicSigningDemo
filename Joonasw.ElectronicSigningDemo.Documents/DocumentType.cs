@@ -1,8 +1,7 @@
-﻿namespace Joonasw.ElectronicSigningDemo.Documents
+﻿namespace Joonasw.ElectronicSigningDemo.Documents;
+
+public enum DocumentType
 {
-    public enum DocumentType
-    {
-        Unsigned,
-        Signed
-    }
+    Unsigned,
+    Signed
 }

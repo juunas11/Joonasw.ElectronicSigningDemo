@@ -1,7 +1,6 @@
-﻿namespace Joonasw.ElectronicSigningDemo.Web
+﻿namespace Joonasw.ElectronicSigningDemo.Web;
+
+internal static class HttpClients
 {
-    internal static class HttpClients
-    {
-        public const string Workflow = nameof(Workflow);
-    }
+    public const string Workflow = nameof(Workflow);
 }

@@ -1,9 +1,8 @@
-﻿namespace Joonasw.ElectronicSigningDemo.WorkflowModels
+﻿namespace Joonasw.ElectronicSigningDemo.WorkflowModels;
+
+public enum SigningDecision
 {
-    public enum SigningDecision
-    {
-        Signed,
-        Rejected,
-        Expired
-    }
+    Signed,
+    Rejected,
+    Expired
 }

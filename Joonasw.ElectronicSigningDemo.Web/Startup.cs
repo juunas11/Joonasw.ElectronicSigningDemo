@@ -9,62 +9,61 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Joonasw.ElectronicSigningDemo.Web
+namespace Joonasw.ElectronicSigningDemo.Web;
+
+public class Startup
 {
-    public class Startup
+    private readonly IConfiguration _configuration;
+
+    public Startup(IConfiguration configuration)
     {
-        private readonly IConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public Startup(IConfiguration configuration)
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRazorPages();
+        services.AddControllers();
+        services.AddHttpClient(HttpClients.Workflow);
+        services.AddDbContext<SigningDbContext>(o =>
         {
-            _configuration = configuration;
+            o.UseSqlServer(_configuration.GetConnectionString("Sql"));
+        });
+        services.AddSingleton(sp =>
+        {
+            BlobServiceClient blobServiceClient = sp.GetRequiredService<BlobServiceClient>();
+            string containerName = _configuration["Storage:ContainerName"];
+            return new BlobStorageService(blobServiceClient, containerName);
+        });
+        services.AddAzureClients(clients =>
+        {
+            clients.AddBlobServiceClient("UseDevelopmentStorage=true");
+        });
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints =>
         {
-            services.AddRazorPages();
-            services.AddControllers();
-            services.AddHttpClient(HttpClients.Workflow);
-            services.AddDbContext<SigningDbContext>(o =>
-            {
-                o.UseSqlServer(_configuration.GetConnectionString("Sql"));
-            });
-            services.AddSingleton(sp =>
-            {
-                BlobServiceClient blobServiceClient = sp.GetRequiredService<BlobServiceClient>();
-                string containerName = _configuration["Storage:ContainerName"];
-                return new BlobStorageService(blobServiceClient, containerName);
-            });
-            services.AddAzureClients(clients =>
-            {
-                clients.AddBlobServiceClient("UseDevelopmentStorage=true");
-            });
-        }
-
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapRazorPages();
-                endpoints.MapControllers();
-            });
-        }
+            endpoints.MapRazorPages();
+            endpoints.MapControllers();
+        });
     }
 }
