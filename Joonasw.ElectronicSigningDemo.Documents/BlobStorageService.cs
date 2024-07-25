@@ -21,8 +21,9 @@ public class BlobStorageService
     public async Task<Stream> DownloadAsync(Guid requestId, DocumentType documentType)
     {
         BlobClient blob = GetBlobClient(requestId, documentType);
-        Response<BlobDownloadInfo> response = await blob.DownloadAsync();
-        return response.Value.Content;
+        Response<BlobDownloadResult> response = await blob.DownloadContentAsync();
+
+        return response.Value.Content.ToStream();
     }
 
     public async Task UploadAsync(Guid requestId, DocumentType documentType, Stream stream)

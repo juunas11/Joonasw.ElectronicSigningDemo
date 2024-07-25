@@ -35,13 +35,15 @@ public class SigningWorkflow
     public async Task<HttpResponseData> StartSigningWorkflow(
         [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req,
         [DurableClient] DurableTaskClient starter,
-        ILogger log)
+        FunctionContext executionContext)
     {
+        var log = executionContext.GetLogger<SigningWorkflow>();
+
         WorkflowStartModel request = await req.ReadFromJsonAsync<WorkflowStartModel>();
         string instanceId = await starter.ScheduleNewOrchestrationInstanceAsync(nameof(MainOrchestrator), request);
 
         log.LogInformation("Started orchestration with ID '{InstanceId}'.", instanceId);
-        return starter.CreateCheckStatusResponse(req, instanceId);
+        return await starter.CreateCheckStatusResponseAsync(req, instanceId);
     }
 
     [Function(nameof(MainOrchestrator))]
@@ -146,24 +148,24 @@ Message from sender: {parameters.Message}
 Link to sign: {signLink}";
 
         await _emailService.SendEmailAsync(parameters.To, subject, content);
-//        var message = new SendGridMessage();
-//        message.AddTo(parameters.To);
-//        message.SetFrom(_configuration["FromEmail"]);
-//        message.SetSubject($"Please sign: {parameters.Subject}");
+        //        var message = new SendGridMessage();
+        //        message.AddTo(parameters.To);
+        //        message.SetFrom(_configuration["FromEmail"]);
+        //        message.SetSubject($"Please sign: {parameters.Subject}");
 
-//        string signLink = $"{_configuration["AppBaseUrl"]}/Sign/{parameters.RequestId}";
-//        signLink = QueryHelpers.AddQueryString(signLink, "email", parameters.To);
+        //        string signLink = $"{_configuration["AppBaseUrl"]}/Sign/{parameters.RequestId}";
+        //        signLink = QueryHelpers.AddQueryString(signLink, "email", parameters.To);
 
-//        message.AddContent("text/plain",
-//$@"Hello,
+        //        message.AddContent("text/plain",
+        //$@"Hello,
 
-//You have been asked to sign a document: {parameters.DocumentName}.
+        //You have been asked to sign a document: {parameters.DocumentName}.
 
-//Message from sender: {parameters.Message}
+        //Message from sender: {parameters.Message}
 
-//Link to sign: {signLink}");
+        //Link to sign: {signLink}");
 
-//        sendGridMessage = message;
+        //        sendGridMessage = message;
     }
 
     [Function(nameof(CreateSignedDocument))]
@@ -186,21 +188,21 @@ Signing workflow for the following document has completed: {parameters.DocumentN
 Link to see status and download the signed document: {statusLink}";
 
         await _emailService.SendEmailAsync(parameters.To, subject, content);
-//        var message = new SendGridMessage();
-//        message.AddTo(parameters.To);
-//        message.SetFrom(_configuration["FromEmail"]);
-//        message.SetSubject($"Document {parameters.DocumentName} signing workflow completed");
+        //        var message = new SendGridMessage();
+        //        message.AddTo(parameters.To);
+        //        message.SetFrom(_configuration["FromEmail"]);
+        //        message.SetSubject($"Document {parameters.DocumentName} signing workflow completed");
 
-//        string statusLink = $"{_configuration["AppBaseUrl"]}/Status/{parameters.RequestId}";
+        //        string statusLink = $"{_configuration["AppBaseUrl"]}/Status/{parameters.RequestId}";
 
-//        message.AddContent("text/plain",
-//$@"Hello,
+        //        message.AddContent("text/plain",
+        //$@"Hello,
 
-//Signing workflow for the following document has completed: {parameters.DocumentName}.
+        //Signing workflow for the following document has completed: {parameters.DocumentName}.
 
-//Link to see status and download the signed document: {statusLink}");
+        //Link to see status and download the signed document: {statusLink}");
 
-//        sendGridMessage = message;
+        //        sendGridMessage = message;
     }
 
     [Function(nameof(MarkWorkflowCompleted))]

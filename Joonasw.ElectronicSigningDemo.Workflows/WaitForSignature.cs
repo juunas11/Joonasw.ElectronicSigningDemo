@@ -24,8 +24,9 @@ public class WaitForSignature
     public async Task<HttpResponseData> AddSignEvent(
         [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req,
         [DurableClient] DurableTaskClient orchestrationClient,
-        ILogger log)
+        FunctionContext executionContext)
     {
+        var log = executionContext.GetLogger<WaitForSignature>();
         AddSignEventModel model = await req.ReadFromJsonAsync<AddSignEventModel>();
         string instanceId = model.InstanceId;
         SigningEvent eventData = model.EventData;

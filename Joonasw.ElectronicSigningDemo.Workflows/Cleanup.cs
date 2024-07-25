@@ -19,8 +19,9 @@ public class Cleanup
     public async Task CleanupSigningWorkflows(
         [TimerTrigger("0 0 0 * * *")] TimerInfo timerInfo,
         [DurableClient] DurableTaskClient orchestrationClient,
-        ILogger log)
+        FunctionContext executionContext)
     {
+        var log = executionContext.GetLogger<Cleanup>();
         var signingRequests = await _db.Requests
             .Include(r => r.Signers)
             .Where(r => r.WorkflowCompletedAt != null
@@ -47,8 +48,9 @@ public class Cleanup
     public async Task CleanupOldWorkflows(
         [TimerTrigger("0 0 0 * * *")] TimerInfo timerInfo,
         [DurableClient] DurableTaskClient orchestrationClient,
-        ILogger log)
+        FunctionContext executionContext)
     {
+        var log = executionContext.GetLogger<Cleanup>();
         var createdTimeFrom = DateTime.UtcNow.Subtract(TimeSpan.FromDays(365 + 30));
         var createdTimeTo = createdTimeFrom.AddDays(30);
         var runtimeStatus = new List<OrchestrationRuntimeStatus>
