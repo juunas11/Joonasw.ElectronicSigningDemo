@@ -1,9 +1,13 @@
-﻿using IronPdf;
-using Joonasw.ElectronicSigningDemo.WorkflowModels;
+﻿using Joonasw.ElectronicSigningDemo.WorkflowModels;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Drawing;
+using PdfSharp;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
 using System;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Joonasw.ElectronicSigningDemo.Documents;
 
@@ -16,37 +20,45 @@ public class DocumentSigningService
         _blobStorageService = blobStorageService;
     }
 
-    // This class uses the IronPdf library to modify the PDF file
-    // Production use of this library requires a license
-    // See their website: https://ironpdf.com/licensing/
-    // Development and testing use is allowed for free, though does add watermarks to the PDFs
-
     public async Task CreateSignedDocumentAsync(Guid requestId, SignerResult[] results)
     {
         await using Stream unsignedPdfStream = await _blobStorageService.DownloadAsync(requestId, DocumentType.Unsigned);
 
-        // TODO: TEST IF THIS IS STILL TRUE
-        // IronPDF is weird, it really wants a file or memory stream
-        // A blob stream won't do
-        var memoryStream = new MemoryStream();
-        await unsignedPdfStream.CopyToAsync(memoryStream);
-        var pdf = new PdfDocument(memoryStream);
-
-        PdfDocument signaturesPdf = await GeneratePdfWithSignerInfoAsync(results);
-        pdf.AppendPdf(signaturesPdf);
-
-        await _blobStorageService.UploadAsync(requestId, DocumentType.Signed, pdf.Stream);
-    }
-
-    private async Task<PdfDocument> GeneratePdfWithSignerInfoAsync(SignerResult[] results)
-    {
-        string html = "<h1>Signed by users</h1>";
-        foreach (SignerResult result in results)
+        var pdf = new PdfDocument();
+        var unsignedPdf = PdfReader.Open(unsignedPdfStream, PdfDocumentOpenMode.Import);
+        // Copy pages from unsigned PDF to signed PDF
+        for (var pageNum = 0; pageNum < unsignedPdf.PageCount; pageNum++)
         {
-            html += $"<p>{WebUtility.HtmlEncode(result.SignerEmail)} signed at {result.DecidedAt:dd.MM.yyyy HH:mm K}</p>";
+            pdf.AddPage(unsignedPdf.Pages[pageNum]);
         }
 
-        var renderer = new ChromePdfRenderer();
-        return await renderer.RenderHtmlAsPdfAsync(html);
+        AddPageWithSignerInfo(pdf, results);
+
+        await using var signedPdfStream = await _blobStorageService.OpenWriteAsync(requestId, DocumentType.Signed);
+
+        pdf.Save(signedPdfStream, closeStream: false);
+    }
+
+    private void AddPageWithSignerInfo(PdfDocument pdf, SignerResult[] results)
+    {
+        var page = pdf.AddPage();
+        page.Size = PageSize.A4;
+
+        var gfx = XGraphics.FromPdfPage(page);
+        var headingFont = new XFont("Arial", 32, XFontStyleEx.Bold);
+        var bodyFont = new XFont("Arial", 16, XFontStyleEx.Regular);
+        var textFormatter = new XTextFormatter(gfx);
+
+        var heading = "Signed by users";
+        var body = string.Join("\n", results.Select(r => $"{r.SignerEmail} signed at {r.DecidedAt:dd.MM.yyyy HH:mm K}"));
+
+        var headingRect = new XRect(40, 40, page.Width.Point - 40, 40);
+        var bodyRect = new XRect(40, 40 + 40 + 16, page.Width.Point - 40 - 40, page.Height.Point - 40 - 40 - 40 - 16);
+
+        gfx.DrawRectangle(XBrushes.Transparent, headingRect);
+        textFormatter.DrawString(heading, headingFont, XBrushes.Black, headingRect);
+
+        gfx.DrawRectangle(XBrushes.Transparent, bodyRect);
+        textFormatter.DrawString(body, bodyFont, XBrushes.Black, bodyRect);
     }
 }

@@ -32,6 +32,12 @@ public class BlobStorageService
         await blob.UploadAsync(stream);
     }
 
+    public Task<Stream> OpenWriteAsync(Guid requestId, DocumentType documentType)
+    {
+        BlobClient blob = GetBlobClient(requestId, documentType);
+        return blob.OpenWriteAsync(overwrite: true);
+    }
+
     private BlobClient GetBlobClient(Guid requestId, DocumentType documentType)
     {
         BlobContainerClient container = _blobServiceClient.GetBlobContainerClient(_containerName);
