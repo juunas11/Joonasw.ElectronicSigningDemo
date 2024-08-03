@@ -47,6 +47,7 @@ public class IndexModel : PageModel
             return Page();
         }
 
+        // Note this check is pretty weak, in a production scenario a heavier check would be required
         if (!Model.Document.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
         {
             ModelState.AddModelError("Document", "Must send PDF file");
@@ -83,10 +84,8 @@ public class IndexModel : PageModel
 
     private async Task UploadAttachmentAsync(Guid requestId)
     {
-        using (Stream stream = Model.Document.OpenReadStream())
-        {
-            await _blobStorageService.UploadAsync(requestId, DocumentType.Unsigned, stream);
-        }
+        await using Stream stream = Model.Document.OpenReadStream();
+        await _blobStorageService.UploadAsync(requestId, DocumentType.Unsigned, stream);
     }
 
     private async Task StartWorkflowAsync(SigningRequest req, string[] signerEmails)

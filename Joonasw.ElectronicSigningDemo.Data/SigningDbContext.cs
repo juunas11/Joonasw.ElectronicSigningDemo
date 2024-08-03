@@ -22,5 +22,9 @@ public class SigningDbContext : DbContext
         builder.Entity<SigningRequest>()
             .Property(r => r.CreatedAt)
             .HasDefaultValueSql("SYSDATETIMEOFFSET()");
+
+        builder.Entity<SigningRequest>()
+            .Navigation(r => r.Workflow)
+            .IsRequired();
     }
 }

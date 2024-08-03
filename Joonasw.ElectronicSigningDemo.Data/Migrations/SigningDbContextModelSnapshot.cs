@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Joonasw.ElectronicSigningDemo.Data.Migrations
 {
     [DbContext(typeof(SigningDbContext))]
@@ -15,16 +17,18 @@ namespace Joonasw.ElectronicSigningDemo.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.1")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("Joonasw.ElectronicSigningDemo.Data.Signer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTimeOffset?>("DecidedAt")
                         .HasColumnType("datetimeoffset");
@@ -90,6 +94,8 @@ namespace Joonasw.ElectronicSigningDemo.Data.Migrations
                         .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Request");
                 });
 
             modelBuilder.Entity("Joonasw.ElectronicSigningDemo.Data.SigningRequest", b =>
@@ -100,24 +106,24 @@ namespace Joonasw.ElectronicSigningDemo.Data.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("Id")
-                                .HasColumnType("nvarchar(64)")
-                                .HasMaxLength(64);
+                                .HasMaxLength(64)
+                                .HasColumnType("nvarchar(64)");
 
                             b1.Property<string>("PurgeHistoryUrl")
-                                .HasColumnType("nvarchar(512)")
-                                .HasMaxLength(512);
+                                .HasMaxLength(512)
+                                .HasColumnType("nvarchar(512)");
 
                             b1.Property<string>("SendEventUrl")
-                                .HasColumnType("nvarchar(512)")
-                                .HasMaxLength(512);
+                                .HasMaxLength(512)
+                                .HasColumnType("nvarchar(512)");
 
                             b1.Property<string>("StatusQueryUrl")
-                                .HasColumnType("nvarchar(512)")
-                                .HasMaxLength(512);
+                                .HasMaxLength(512)
+                                .HasColumnType("nvarchar(512)");
 
                             b1.Property<string>("TerminateUrl")
-                                .HasColumnType("nvarchar(512)")
-                                .HasMaxLength(512);
+                                .HasMaxLength(512)
+                                .HasColumnType("nvarchar(512)");
 
                             b1.HasKey("SigningRequestId");
 
@@ -126,6 +132,14 @@ namespace Joonasw.ElectronicSigningDemo.Data.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("SigningRequestId");
                         });
+
+                    b.Navigation("Workflow")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Joonasw.ElectronicSigningDemo.Data.SigningRequest", b =>
+                {
+                    b.Navigation("Signers");
                 });
 #pragma warning restore 612, 618
         }
