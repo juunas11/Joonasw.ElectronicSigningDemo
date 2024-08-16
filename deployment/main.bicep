@@ -14,6 +14,9 @@ var naming = {
   sqlDb: ''
 }
 
+// TODO: Log Analytics workspace
+// TODO: App Insights
+
 resource functionsAppServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: naming.functionsAppServicePlan
   location: location
@@ -73,6 +76,18 @@ resource functionsApp 'Microsoft.Web/sites@2023-12-01' = {
           value: 'dotnet-isolated'
         }
         {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: 'TODO'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'TODO'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: 'TODO'
+        }
+        {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: '1'
         }
@@ -101,6 +116,11 @@ resource functionsApp 'Microsoft.Web/sites@2023-12-01' = {
       minTlsVersion: '1.2'
       netFrameworkVersion: 'v8.0'
       scmMinTlsVersion: '1.2'
+      cors: {
+        allowedOrigins: [
+          'https://portal.azure.com'
+        ]
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using DurableFunctionsMonitor.DotNetIsolated;
 using Joonasw.ElectronicSigningDemo.Data;
 using Joonasw.ElectronicSigningDemo.Documents;
 using Joonasw.ElectronicSigningDemo.Workflows;
@@ -8,7 +9,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
-    .ConfigureFunctionsWebApplication()
+    .ConfigureFunctionsWebApplication(workerAppBuilder =>
+    {
+        workerAppBuilder.UseDurableFunctionsMonitor((settings, extensionPoints) =>
+        {
+            settings.Mode = DfmMode.ReadOnly;
+            settings.DisableAuthentication = true;
+        });
+    })
     .ConfigureServices((context, services) =>
     {
         string dbConnectionString = context.Configuration["ConnectionStrings:Sql"];
@@ -25,7 +33,7 @@ var host = new HostBuilder()
         });
         services.AddAzureClients(clients =>
         {
-            clients.AddBlobServiceClient("UseDevelopmentStorage=True");
+            clients.AddBlobServiceClient(context.Configuration["Storage:ConnectionString"]);
         });
 
         var sendGridApiKey = context.Configuration["SendGridKey"];

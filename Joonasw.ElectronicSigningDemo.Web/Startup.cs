@@ -37,8 +37,9 @@ public class Startup
         });
         services.AddAzureClients(clients =>
         {
-            clients.AddBlobServiceClient("UseDevelopmentStorage=true");
+            clients.AddBlobServiceClient(_configuration["Storage:ConnectionString"]);
         });
+        services.AddApplicationInsightsTelemetry();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
