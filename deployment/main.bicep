@@ -4,18 +4,40 @@ param sendGridApiKey string
 param emailSenderAddress string
 
 var naming = {
+  appInsights: ''
   durableFunctionsTaskHubContainer: 'esigning'
   frontendAppServicePlan: ''
   frontendAppService: ''
   functionsAppServicePlan: ''
   functionsStorageAccount: ''
   functionsApp: ''
+  logAnalytics: ''
   sqlServer: ''
   sqlDb: ''
 }
 
-// TODO: Log Analytics workspace
-// TODO: App Insights
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: naming.logAnalytics
+  location: location
+  properties: {
+    retentionInDays: 30
+    sku: {
+      name: 'PerGB2018'
+    }
+  }
+}
+
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: naming.appInsights
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Flow_Type: 'Bluefield'
+    Request_Source: 'rest'
+    WorkspaceResourceId: logAnalytics.id
+  }
+}
 
 resource functionsAppServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: naming.functionsAppServicePlan
@@ -69,7 +91,11 @@ resource functionsApp 'Microsoft.Web/sites@2023-12-01' = {
       appSettings: [
         {
           name: 'AzureWebJobsStorage'
-          value: 'TODO'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};AccountKey=${functionsStorageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
         }
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
@@ -77,15 +103,15 @@ resource functionsApp 'Microsoft.Web/sites@2023-12-01' = {
         }
         {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: 'TODO'
+          value: appInsights.properties.ConnectionString
         }
         {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'TODO'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};AccountKey=${functionsStorageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
         }
         {
           name: 'WEBSITE_CONTENTSHARE'
-          value: 'TODO'
+          value: toLower(naming.functionsApp)
         }
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
@@ -93,7 +119,7 @@ resource functionsApp 'Microsoft.Web/sites@2023-12-01' = {
         }
         {
           name: 'ConnectionStrings__Sql'
-          value: 'TODO'
+          value: 'Data Source=${naming.sqlServer}${environment().suffixes.sqlServerHostname}; Authentication=Active Directory Managed Identity; Encrypt=True; Database=${naming.sqlDb}'
         }
         {
           name: 'AppBaseUrl'
@@ -106,6 +132,10 @@ resource functionsApp 'Microsoft.Web/sites@2023-12-01' = {
         {
           name: 'FromEmail'
           value: emailSenderAddress
+        }
+        {
+          name: 'Storage__ConnectionString'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${functionsStorageAccount.name};AccountKey=${functionsStorageAccount.listKeys().keys[0].value};EndpointSuffix=core.windows.net'
         }
         {
           name: 'Storage__ContainerName'
@@ -152,16 +182,20 @@ resource frontendAppService 'Microsoft.Web/sites@2023-12-01' = {
           value: '1'
         }
         {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+        {
           name: 'ConnectionStrings__Sql'
           value: 'TODO'
         }
         {
           name: 'Workflow__StartUrl'
-          value: 'TODO'
+          value: 'https://${naming.functionsApp}.azurewebsites.net/api/TODO?code=TODO'
         }
         {
           name: 'Workflow__AddSignEventUrl'
-          value: 'TODO'
+          value: 'https://${naming.functionsApp}.azurewebsites.net/api/TODO?code=TODO'
         }
         {
           name: 'Storage__ContainerName'
