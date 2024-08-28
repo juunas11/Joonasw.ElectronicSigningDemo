@@ -1,0 +1,12 @@
+{
+    "tenantId": "",
+    "subscriptionId": "",
+    "resourceGroup": "",
+    "location": "northeurope",
+    "sendGridApiKey": "",
+    "emailSenderAddress": "",
+    "developerUserId": "",
+    "developerUsername": "",
+    "developerIpAddress": ""
+  }
+  
