@@ -7,7 +7,7 @@ The app uses an SQL database to store the signing requests.
 
 Note the app was made for demo purposes and is not ready for production use.
 Additional authentication and authorization would be required to verify the signers.
-The PDFs are also not actually digitally signed, a page is added with the signers' email addresses.
+The PDFs are also not actually digitally signed; a page is added with the signers' email addresses.
 
 ## Local setup
 
@@ -17,8 +17,8 @@ Ensure you have the following installed:
 - [Azurite](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite)
 - [Azure Storage Explorer](https://azure.microsoft.com/en-us/products/storage/storage-explorer/)
   - This is only needed to create the needed Storage container in the emulator. You can use other tools as well.
-- An SQL database server
-  - The app has been tested with SQL Server Express LocalDB, which is included with Visual Studio 2022 and can be included in .NET desktop development workload or through Individual components
+- An SQL database
+  - The app has been tested with SQL Server Express LocalDB
 
 Rename _local.settings.sample.json_ to _local.settings.json_ in the Workflows project.
 Update the database connection string to match your environment both there and in appsettings.Development.json of the Web project.
