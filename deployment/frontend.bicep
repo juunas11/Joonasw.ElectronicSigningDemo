@@ -81,3 +81,5 @@ resource frontendAppService 'Microsoft.Web/sites@2023-12-01' = {
     }
   }
 }
+
+output frontendAppServiceName string = frontendAppService.name

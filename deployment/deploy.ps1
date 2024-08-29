@@ -1,5 +1,7 @@
 $ErrorActionPreference = 'Stop'
 
+Import-Module SqlServer
+
 $configPath = Join-Path $PSScriptRoot config.json
 $config = Get-Content $configPath -Raw | ConvertFrom-Json
 
@@ -100,3 +102,74 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $frontendBicepOutputs = $frontendBicepResult.properties.outputs
+$frontendAppServiceName = $frontendBicepOutputs.frontendAppServiceName.value
+
+Pop-Location
+
+Push-Location (Join-Path $PSScriptRoot ..\Joonasw.ElectronicSigningDemo.Web -Resolve)
+
+Write-Host "Creating Frontend deployment package..."
+
+dotnet publish --configuration Release --output publish_output
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to create Frontend deployment package."
+}
+
+Compress-Archive -Path .\publish_output\* -DestinationPath .\FrontendPublish.zip -CompressionLevel Fastest -Force
+
+Write-Host "Deploying Frontend..."
+az webapp deploy --subscription "$subscriptionId" -g "$resourceGroup" -n "$frontendAppServiceName" --src-path .\FrontendPublish.zip --type zip | Out-Null
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to deploy Frontend."
+}
+
+Remove-Item -R .\publish_output
+Remove-Item .\FrontendPublish.zip
+
+Pop-Location
+
+$sqlAccessTokenResult = az account get-access-token --tenant "$tenantId" --resource "https://database.windows.net" | ConvertFrom-Json
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to get SQL access token."
+}
+
+$sqlAccessToken = $sqlAccessTokenResult.accessToken
+$sqlServerFqdn = "$sqlServerName.database.windows.net"
+
+Push-Location (Join-Path $PSScriptRoot .. -Resolve)
+
+dotnet ef migrations script -p Joonasw.ElectronicSigningDemo.Data -s Joonasw.ElectronicSigningDemo.Web -o migration.sql
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to generate migration script."
+}
+
+Write-Host "Applying migrations..."
+Invoke-Sqlcmd -ServerInstance $sqlServerFqdn -Database $sqlDbName -AccessToken $sqlAccessToken -InputFile migration.sql
+
+Remove-Item migration.sql
+
+Pop-Location
+
+$createFunctionAppSqlUser = "IF NOT EXISTS (SELECT [name] `
+FROM [sys].[database_principals] `
+WHERE [type] = N'E' AND [name] = N'$functionAppName') `
+CREATE USER [$functionAppName] FROM EXTERNAL PROVIDER;"
+$grantFunctionAppSqlAccess = "ALTER ROLE db_datareader ADD MEMBER [$functionAppName];"
+$grantFunctionAppSqlAccess += "ALTER ROLE db_datawriter ADD MEMBER [$functionAppName];"
+
+Write-Host "Creating Function App SQL user..."
+Invoke-Sqlcmd -ServerInstance $sqlServerFqdn -Database $sqlDbName -AccessToken $sqlAccessToken -Query $createFunctionAppSqlUser
+Invoke-Sqlcmd -ServerInstance $sqlServerFqdn -Database $sqlDbName -AccessToken $sqlAccessToken -Query $grantFunctionAppSqlAccess
+
+$createFrontendSqlUser = "IF NOT EXISTS (SELECT [name] `
+FROM [sys].[database_principals] `
+WHERE [type] = N'E' AND [name] = N'$frontendAppServiceName') `
+CREATE USER [$frontendAppServiceName] FROM EXTERNAL PROVIDER;"
+$grantFrontendSqlAccess = "ALTER ROLE db_datareader ADD MEMBER [$frontendAppServiceName];"
+$grantFrontendSqlAccess += "ALTER ROLE db_datawriter ADD MEMBER [$frontendAppServiceName];"
+
+Write-Host "Creating Frontend SQL user..."
+Invoke-Sqlcmd -ServerInstance $sqlServerFqdn -Database $sqlDbName -AccessToken $sqlAccessToken -Query $createFrontendSqlUser
+Invoke-Sqlcmd -ServerInstance $sqlServerFqdn -Database $sqlDbName -AccessToken $sqlAccessToken -Query $grantFrontendSqlAccess
+
+Write-Host "Deployment completed successfully."
