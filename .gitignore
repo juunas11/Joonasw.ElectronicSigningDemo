@@ -31,3 +31,6 @@ _ReSharper*/
 #Nuget packages folder
 packages/
 deployment/config.json
+__blobstorage__
+__queuestorage__
+__azurite_*.json
