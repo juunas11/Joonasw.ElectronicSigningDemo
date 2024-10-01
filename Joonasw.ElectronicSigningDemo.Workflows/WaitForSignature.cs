@@ -57,7 +57,6 @@ public class WaitForSignature
             // Wait for user to sign for 5 days
             // Note this does not actually make the function wait here for 5 days
             // The function is completely suspended until something happens
-            // You can't put more than 6 days of wait time here though
             // Leaving out the timeout makes the wait _indefinite_
             SigningEvent ev = await context.WaitForExternalEvent<SigningEvent>(SignEvent, TimeSpan.FromDays(5));
 
