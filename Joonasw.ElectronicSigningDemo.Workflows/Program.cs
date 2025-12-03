@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PdfSharp.Fonts;
+
+GlobalFontSettings.UseWindowsFontsUnderWindows = true;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication(workerAppBuilder =>
