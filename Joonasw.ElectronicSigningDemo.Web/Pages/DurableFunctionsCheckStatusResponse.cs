@@ -4,14 +4,14 @@ namespace Joonasw.ElectronicSigningDemo.Web.Pages;
 
 internal class DurableFunctionsCheckStatusResponse
 {
-    [JsonPropertyName("id")]
+    [JsonPropertyName("Id")]
     public string Id { get; set; }
-    [JsonPropertyName("statusQueryGetUri")]
+    [JsonPropertyName("StatusQueryGetUri")]
     public string StatusQueryGetUri { get; set; }
-    [JsonPropertyName("sendEventPostUri")]
+    [JsonPropertyName("SendEventPostUri")]
     public string SendEventPostUri { get; set; }
-    [JsonPropertyName("terminatePostUri")]
+    [JsonPropertyName("TerminatePostUri")]
     public string TerminatePostUri { get; set; }
-    [JsonPropertyName("purgeHistoryDeleteUri")]
+    [JsonPropertyName("PurgeHistoryDeleteUri")]
     public string PurgeHistoryDeleteUri { get; set; }
 }
